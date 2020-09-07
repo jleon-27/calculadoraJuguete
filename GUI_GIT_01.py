@@ -4,6 +4,23 @@ from tkinter import messagebox
 #--------------------funciones-----------------------------------------
 def conectarBBDD():
     try:
+        #creo el archivo donde se alojara la base de datos
+        miConexion=sqlite3.connect('Registro Personas')
+        #creo el cursor de la base de datos
+        miCursor=miConexion.cursor()
+        #creo la base de datos
+        miCursor.execute('''
+            CREATE TABLE tablaPersonas(
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                Nombre      VARCHAR(10),
+                Apellido    VARCHAR(10),
+                PASSWORD    VARCHAR(10),
+                DIRECCION   VARCHAR(20),
+                COMENTARIOS VARCHAR (100)
+            )
+        ''')
+        #cerrar archivo
+        miConexion.close()
         messagebox.showinfo('BBDD','BBDD creada con exito')
     except:
         messagebox.showwarning('¡Atencion!','La base de datos ya fue creada')
@@ -11,26 +28,118 @@ def conectarBBDD():
 
 def createBoton():
     print('create')
+    #nombreRecojo=nombre.get()
+    #apellidoRecojo=apellido.get()
+    #passwordRecojo=password.get()
+    #direccionRecojo=direccion.get()
+    #abro el archivo donde se alojara la base de datos
+    miConexion=sqlite3.connect('Registro Personas')
+    #creo el cursor de la base de datos
+    miCursor=miConexion.cursor()
+    #insertar registro en la base de datos
+    #recojo cada uno de los datos de la persona
+    Persona=[
+        (
+            nombre.get(),
+            apellido.get(),
+            password.get(),
+            direccion.get(),
+            Comentarioscuadro.get(1.0, "end")
+        )
+    ]
+    #necesito insertarlo en la base de datos
+    #utilizo executemany para insertar los registros de la lista a la tabla
+    miCursor.executemany('INSERT INTO tablaPersonas VALUES(NULL,?,?,?,?,?)',Persona)
+    #verifico el cambio
+    miConexion.commit()
+    #cerrar archivo
+    miConexion.close()
+    nombreRecojo=nombre.set('')
+    apellidoRecojo=apellido.set('')
+    passwordRecojo=password.set('')
+    direccionRecojo=direccion.set('')
+    Comentarioscuadro.delete(1.0,END)#punto de partida y punto final
+    messagebox.showinfo('usuario creado con exito con exito')
     pass
 
 def readBoton():
     print('read')
+    #abro el archivo donde se alojara la base de datos
+    miConexion=sqlite3.connect('Registro Personas')
+    #creo el cursor de la base de datos
+    miCursor=miConexion.cursor()
+    #recupero los datos de la tabla
+    miCursor.execute('SELECT * FROM tablaPersonas WHERE ID=' + id.get())
+    #lo almaceno en una variable para poder leerlo
+    recuperoPersona=miCursor.fetchall()
+    for i in recuperoPersona:
+        #print(i)
+        id.set(i[0])
+        nombre.set(i[1])
+        apellido.set(i[2])
+        password.set(i[3])
+        direccion.set(i[4])
+        Comentarioscuadro.insert(1.0,i[5])
+    #verifico el cambio
+    miConexion.commit()
+    #cerrar archivo
+    miConexion.close()
     pass
 
 def updateBoton():
     print('update')
+    #abro el archivo donde se alojara la base de datos
+    miConexion=sqlite3.connect('Registro Personas')
+    #creo el cursor de la base de datos
+    miCursor=miConexion.cursor()
+    #actualizo
+    miCursor.execute("UPDATE tablaPersonas SET Nombre='"+nombre.get()+
+        "',Apellido='"+apellido.get()+
+        "',PASSWORD='"+password.get()+
+        "',DIRECCION='"+direccion.get()+
+        "',COMENTARIOS='"+Comentarioscuadro.get('1.0',END)+
+        "'WHERE ID="+ id.get())
+    #verifico el cambio
+    miConexion.commit()
+    #cerrar archivo
+    miConexion.close()
+    nombreRecojo=nombre.set('')
+    apellidoRecojo=apellido.set('')
+    passwordRecojo=password.set('')
+    direccionRecojo=direccion.set('')
+    Comentarioscuadro.delete(1.0,END)#punto de partida y punto final
+    messagebox.showinfo('usuario actualizado con exito')
     pass
 
 def deleteBoton():
     print('delete')
+    #abro el archivo donde se alojara la base de datos
+    miConexion=sqlite3.connect('Registro Personas')
+    #creo el cursor de la base de datos
+    miCursor=miConexion.cursor()
+    #apunto al ID para eliminarID
+    miCursor.execute('DELETE FROM tablaPersonas WHERE ID=' + id.get())
+    #verifico el cambio
+    miConexion.commit()
+    #cerrar archivo
+    miConexion.close()
+    messagebox.showinfo('usuario eliminado con exito')
     pass
 
 def salirBoton():
     print('salir')
+    salir=messagebox.askquestion('atencion','esta apunto de salir de la app')
+    if(salir=='yes'):
+        raiz.destroy()
     pass
 
 def cleanAll():
     print('limpiar todo')
+    nombreRecojo=nombre.set('')
+    apellidoRecojo=apellido.set('')
+    passwordRecojo=password.set('')
+    direccionRecojo=direccion.set('')
+    Comentarioscuadro.delete(1.0,END)#punto de partida y punto final
     pass
 
 #-------------------------------interfaz-------------------------------------
