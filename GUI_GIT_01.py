@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
 
+print('parrafo agregado desde gitHub')
+
 #--------------------funciones-----------------------------------------
 def conectarBBDD():
     try:
